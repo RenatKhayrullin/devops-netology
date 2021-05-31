@@ -1,6 +1,7 @@
 Task 1: aefead2207ef7e2aa5dc81a34aedf0cad4c32545
 
 <code>git show --pretty=oneline aefea</code>
+<code>git rev-parse aefea</code>
 <p>
 aefead2207ef7e2aa5dc81a34aedf0cad4c32545 Update CHANGELOG.md
 diff --git a/CHANGELOG.md b/CHANGELOG.md

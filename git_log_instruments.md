@@ -1,7 +1,7 @@
 Task 1: aefead2207ef7e2aa5dc81a34aedf0cad4c32545
 
->>git show --pretty=oneline aefea
-<<
+<code>git show --pretty=oneline aefea</code>
+<p>
 aefead2207ef7e2aa5dc81a34aedf0cad4c32545 Update CHANGELOG.md
 diff --git a/CHANGELOG.md b/CHANGELOG.md
 index 86d70e3e0..588d807b1 100644
@@ -15,11 +15,12 @@ index 86d70e3e0..588d807b1 100644
  * command/0.13upgrade: Fix `0.13upgrade` usage help text to include options ([#25127](https://github.com/hashicorp/terraform/issues/25127))
  * command/0.13upgrade: Do not add source for builtin provider ([#25215](https://github.com/hashicorp/terraform/issues/25215))
  * command/apply: Fix bug which caused Terraform too silently exit on Windows when using absolute plan path ([#25233](https://github.com/hashicorp/terraform/issues/25233))
+</p>
 
 Task 2: tag: v0.12.23
 
->>git show --pretty=oneline 85024d3
-<<
+<code>git show --pretty=oneline 85024d3</code>
+<p>
 85024d3100126de36331c6982bfaac02cdab9e76 (tag: v0.12.23) v0.12.23
 diff --git a/CHANGELOG.md b/CHANGELOG.md
 index 1a9dcd0f9..faedc8bf4 100644
@@ -44,22 +45,24 @@ index 33ac86f5d..bcb6394d2 100644
 
  // SemVer is an instance of version.Version. This has the secondary
  // benefit of verifying during tests and init time that our version is a
-
+<p>
+ 
 Task 3: Формально получается 2 родителя: 9ea88f22f 56cd7859e
 
->>git log --pretty='%h %s' --graph b8d720 -n 3
-<<
+<code>git log --pretty='%h %s' --graph b8d720 -n 3</code>
+<p>
 *   b8d720f83 Merge pull request #23916 from hashicorp/cgriggs01-stable
 |\
 | * 9ea88f22f add/update community provider listings
 |/
 *   56cd7859e Merge pull request #23857 from hashicorp/cgriggs01-stable
 |\
+</p>
 
 Task 4: 
 
->>git log --pretty=oneline v0.12.24 --not v0.12.23
-<<
+<code>git log --pretty=oneline v0.12.24 --not v0.12.23</code>
+<p>
 33ff1c03bb960b332be3af2e333462dde88b279e (tag: v0.12.24) v0.12.24
 b14b74c4939dcab573326f4e3ee2a62e23e12f89 [Website] vmc provider links
 3f235065b9347a758efadc92295b540ee0a5e26e Update CHANGELOG.md
@@ -70,27 +73,29 @@ d5f9411f5108260320064349b757f55c09bc4b80 command: Fix bug when using terraform l
 4b6d06cc5dcb78af637bbb19c198faff37a066ed Update CHANGELOG.md
 dd01a35078f040ca984cdd349f18d0b67e486c35 Update CHANGELOG.md
 225466bc3e5f35baa5d07197bbc079345b77525e Cleanup after v0.12.23 release
->>git log --pretty=oneline v0.12.23 --not v0.12.24
-<<
+</p>
+<code>git log --pretty=oneline v0.12.23 --not v0.12.24</code>
 
 Task 5: 8c928e835
 
->>git log --oneline -G'func\sproviderSource\('
-<<
+<code>git log --oneline -G'func\sproviderSource\('</code>
+<p>
 5af1e6234 main: Honor explicit provider_installation CLI config when present
 8c928e835 main: Consult local directories as potential mirrors of providers
+</p>
 
 Task 6: 78b12205587fe839f10d946ea3fdc06719decb05 52dbf94834cb970b510f2fba853a5b49ad9b1a46
         41ab0aef7a0fe030e84018973a64135b11abcd70 66ebff90cdfaa6938f26f908c7ebad8d547fea17
         8364383c359a6b738a436d1b7745ccdce178df47 
 
->>git log --oneline -G'func\sglobalPluginDirs\('
-<<
 Нашли коммит в котором функция была добавленя или удалена
+<code>git log --oneline -G'func\sglobalPluginDirs\('</code>
+<p>
 8364383c3 Push plugin discovery down into command package
->>git diff-tree -p 8364383c3
+<p>
 Вытащим из инфы о коммите файл в котором живет функция
-<<
+<code>git diff-tree -p 8364383c3</code>
+<p>
 diff --git a/plugins.go b/plugins.go
 new file mode 100644
 index 000000000..9717724a0
@@ -113,8 +118,10 @@ index 000000000..9717724a0
 +// of the same plugin version are found, but newer versions always override
 +// older versions where both satisfy the provider version constraints.
 +func globalPluginDirs() []string
->>git log -L :globalPluginDirs:plugins.go --pretty=oneline
-<<
+</p>
+Ищем коммиты с изменениями
+<code>git log -L :globalPluginDirs:plugins.go --pretty=oneline</code>
+<p>
 78b12205587fe839f10d946ea3fdc06719decb05 Remove config.go and update things using its aliases
 
 diff --git a/plugins.go b/plugins.go
@@ -232,11 +239,12 @@ diff --git a/plugins.go b/plugins.go
 +
 +       return ret
 +}
+</p>
 
 Task 7: James Bardin <j.bardin@gmail.com>
 
->>git log -G'func\ssynchronizedWriters\('
-<<
+<code>git log -G'func\ssynchronizedWriters\('</code>
+<p>
 commit bdfea50cc85161dea41be0fe3381fd98731ff786
 Author: James Bardin <j.bardin@gmail.com>
 Date:   Mon Nov 30 18:02:04 2020 -0500
@@ -268,3 +276,4 @@ Date:   Wed May 3 16:25:41 2017 -0700
     can be only one Write call outstanding across both stderr and stdout,
     mimicking the usual behavior we expect (when stderr/stdout are a normal
     file handle) of each Write being completed atomically.
+ </p>

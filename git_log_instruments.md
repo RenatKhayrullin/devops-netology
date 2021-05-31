@@ -187,7 +187,7 @@ Task 6:
 > \+       return ret \
 > \+}
 
-Task 7: James Bardin <j.bardin@gmail.com>
+Task 7: Martin Atkins <mart@degeneration.co.uk>
 
 <code>git log -G'func\ssynchronizedWriters\('</code>
 

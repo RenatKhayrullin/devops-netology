@@ -110,7 +110,7 @@ do
     then
         echo `date` $available_msg >> $address.log
     else
-        echo `date` $not_available_msg >> $error.log
+        echo `date` $not_available_msg >> $address_error.log
         cond=$(($?))
     fi
 done

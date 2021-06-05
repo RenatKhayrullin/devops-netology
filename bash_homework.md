@@ -81,7 +81,7 @@ done
 #EOF
 ```
 
-<p>Кладем скрипты checker_runner.sh в одну директорию checker.sh и запускаем ./checker_runner.sh</p>
+<p>Кладем скрипты checker_runner.sh и checker.sh в одну директорию и запускаем ./checker_runner.sh</p>
 
 Task 4:
 

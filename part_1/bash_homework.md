@@ -4,7 +4,7 @@ Task 1:
 > echo $c --> a+b, так как a, + и b строковые символы
 
 <code>d=$a+$b</code>
-> echo $d --> 1+2, так как $a, + и $b обращение к переменным с значениями 1 и 2
+> echo $d --> 1+2, так как $a, и $b обращение к переменным с значениями 1 и 2
 
 <code>e=$(($a+$b))</code>
 > echo $e --> 3, так как $(команда), ($a+$b) -- команда сложения двух переменных
@@ -81,7 +81,7 @@ done
 #EOF
 ```
 
-<p>Кладем скрипты checker_runner.sh в одну директорию checker.sh и запускаем ./checker_runner.sh</p>
+<p>Кладем скрипты checker_runner.sh и checker.sh в одну директорию и запускаем ./checker_runner.sh</p>
 
 Task 4:
 
@@ -110,7 +110,7 @@ do
     then
         echo `date` $available_msg >> $address.log
     else
-        echo `date` $not_available_msg >> $error.log
+        echo `date` $not_available_msg >> $address_error.log
         cond=$(($?))
     fi
 done

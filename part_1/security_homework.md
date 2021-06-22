@@ -23,41 +23,33 @@ vault secrets tune -max-lease-ttl=8760h pki
 Создаем RootCA сертификат
 ```
 vault write -field=certificate pki/root/generate/internal \
-        common_name="devops.netology.com" \
-        ttl=87600h > RootCA.crt
+        common_name="netology.example.com" \
+        ttl=87600h
 ```
 
 Обновляем пути до issuing сертификатов и CRL
+
 ```
 vault write pki/config/urls \
     issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" \
     crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl"
 ```
 
+Создаем роль.
+
+```
+vault write pki/roles/example-dot-com \
+    allowed_domains=netology.example.com \
+    allow_subdomains=true \
+    max_ttl=72h
+```
+
 Task 4:
 
-Создаем intermediate сертификат
+Создаем credentinal и получем IssuingCa.crt и IssuingCa.key.
 ```
-vault secrets enable -path=pki_int pki
-vault secrets tune -max-lease-ttl=43800h pki_int
-
-vault write -format=json pki_int/intermediate/generate/internal \
-      common_name="devops.netology.com Intermediate Authority" \
-      | jq -r '.data.csr' > IntermediateCA.csr
-```
-
-Подписываем сертификат
-
-```
-vault write -format=json pki/root/sign-intermediate csr=@IntermediateCA.csr \
-        format=pem_bundle ttl="43800h" \
-        | jq -r '.data.certificate' > intermediate.cert.pem
-        
-vault write pki_int/intermediate/set-signed certificate=@intermediate.cert.pem
-
-vault write pki_int/config/urls \ 
-        issuing_certificates="http://127.0.0.1:8200/v1/pki_int/ca" \ 
-        crl_distribution_points="http://127.0.0.1:8200/v1/pki_int/crl"
+vault write pki/issue/example-dot-com \
+    common_name=www.netology.example.com
 ```
 
 Task 5:
@@ -68,7 +60,7 @@ Task 5:
 sudo apt update
 sudo apt install nginx
 
-По факту не потребовалось так как ufw выключен
+По факту не потребовалось, так как ufw выключен
 sudo ufw allow 'Nginx HTTP'
 sudo ufw allow 'Nginx HTTPS'
 ```
@@ -94,8 +86,8 @@ sudo ufw allow 'Nginx HTTPS'
 
 Создадим тестовую страницу
 ```
-mkdir -p /var/www/devops.netology.com/html/
-sudo vim /var/www/devops.netology.com/html/index.html
+mkdir -p /var/www/netology.example.com/html
+sudo vim /var/www/netology.example.com/html/index.html
 ```
 
 index.html
@@ -103,10 +95,10 @@ index.html
 ```
 <html>
     <head>
-        <title>Welcome to devops.netology.com!</title>
+        <title>Welcome to netology.example.com!</title>
     </head>
     <body>
-        <h1>Success!  The devops.netology.com server block is working!</h1>
+        <h1>Success!  The netology.example.com server block is working!</h1>
     </body>
 </html>
 ```
@@ -114,15 +106,15 @@ index.html
 Дадим права.
 
 ```
-sudo chown -R $USER:$USER /var/www/devops.netology.com/html
-sudo chmod -R 755 /var/www/devops.netology.com/html/index.html
+sudo chown -R $USER:$USER /var/www/netology.example.com/html
+sudo chmod -R 755 /var/www/netology.example.com/html/index.html
 ```
 
 Настроим доступ к странице через nginx.
 
 ```
 cd /etc/nginx/sites-available
-sudo vim devops.netology.com
+sudo vim netology.example.com
 ```
 
 Содержимое конфига.
@@ -132,10 +124,10 @@ server {
         listen 80;
         listen [::]:80;
 
-        root /var/www/devops.netology.com/html;
+        root /var/www/netology.example.com/html;
         index index.html index.htm index.nginx-debian.html;
 
-        server_name devops.netology.com www.devops.netolgy.com;
+        server_name netology.example.com www.netology.example.com;
 
         location / {
                 try_files $uri $uri/ =404;
@@ -146,7 +138,7 @@ server {
 Пробросим симлинк.
 
 ```
-sudo ln -s /etc/nginx/sites-available/devops.netology.com /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/netology.example.com /etc/nginx/sites-enabled/
 systemctl reload nginx
 ```
 
@@ -174,7 +166,8 @@ curl --request GET "localhost:80"
 Создадим симлинк на созданный сертификат.
 
 ```
-sudo ln -s intermediate.cert.pem /etc/ssl/certs/IntermediateCA.csr
+sudo ln -s ~/IssuingCa.crt /etc/ssl/certs/Netology.example.issuing.ca.crt
+sudo ln -s ~/IssuingCa.key /etc/ssl/private/Netology.example.issuing.ca.key
 ```
 
 Добавляем в настройки сайта поддержку сертификатов.
@@ -182,18 +175,21 @@ sudo ln -s intermediate.cert.pem /etc/ssl/certs/IntermediateCA.csr
 ```
 server {
         ...
-        ssl_certificate /etc/ssl/certs/IntermediateCA.csr;
-        ssl_certificate_key <не пойму где его взять при генерации сертификата через vault>;
+        ssl_certificate /etc/ssl/certs/Netology.example.issuing.ca.crt;
+        ssl_certificate_key /etc/ssl/private/Netology.example.issuing.ca.key;
         ...
 }
 ```
 
+И это не съел Nginx, надо переделывать через IntemediateCa ....
+
 Task 6:
+
 
 Устанавливаем сертификаты в систему как локальный сертификат.
 
 ```
-sudo cp intermediate.cert.pem /usr/local/share/ca-certificates/
+sudo cp intermediate.cert.crt /usr/local/share/ca-certificates/
 sudo update-ca-certificates
 ```
 

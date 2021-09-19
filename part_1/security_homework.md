@@ -223,7 +223,7 @@ establish a secure connection to it. To learn more about this situation and
 how to fix it, please visit the web page mentioned above.
 ```
 
-Возьмем сертификат с шага pki_int.pem (Task 3-4.3) и выполним
+Возьмем сертификат pki_int.pem с шага (Task 3-4.3) и выполним
 ```
 curl -v --cacert pki_int.pem https://netology.example.com:443
 ```

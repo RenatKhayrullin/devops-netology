@@ -7,7 +7,7 @@ Task 2:
 vault server -dev -dev-listen-address="0.0.0.0:8200"
 ```
 
-Task 3:
+Task 3-4:
 
 В соседней консоли.
 
@@ -22,34 +22,67 @@ vault secrets tune -max-lease-ttl=8760h pki
 
 Создаем RootCA сертификат
 ```
-vault write -field=certificate pki/root/generate/internal \
-        common_name="netology.example.com" \
-        ttl=87600h
+vault write -format=json pki/root/generate/internal \
+ common_name="pki-ca-root" ttl=87600h | tee \
+>(jq -r .data.certificate > ca.pem) \
+>(jq -r .data.issuing_ca > issuing_ca.pem) \
+>(jq -r .data.private_key > ca-key.pem)
 ```
 
-Обновляем пути до issuing сертификатов и CRL
+Создаем IntermediateCA сертификат
 
+1. Перенастроим пути в Vault c pki на pki_int
 ```
-vault write pki/config/urls \
-    issuing_certificates="http://127.0.0.1:8200/v1/pki/ca" \
-    crl_distribution_points="http://127.0.0.1:8200/v1/pki/crl"
+vault secrets enable -path pki_int pki
+```
+2. Сгенерируем внутренний IntermediateCA сертификат
+```
+vault write -format=json pki_int/intermediate/generate/internal \
+common_name="pki-ca-int" ttl=43800h | tee \
+>(jq -r .data.csr > pki_int.csr) \
+>(jq -r .data.private_key > pki_int.pem)
+```
+3. Подпишем и установим IntermediateCA с помощью RootCA
+```
+vault write -format=json pki/root/sign-intermediate \
+csr=@pki_int.csr \
+common_name="pki-ca-int" ttl=43800h | tee \
+>(jq -r .data.certificate > pki_int.pem) \
+>(jq -r .data.issuing_ca > pki_int_issuing_ca.pem)
+
+vault write pki_int/intermediate/set-signed certificate=@pki_int.pem
 ```
 
-Создаем роль.
-
+4. Создадим роль для выпуска сертификатов для клиентов
 ```
-vault write pki/roles/example-dot-com \
-    allowed_domains=netology.example.com \
-    allow_subdomains=true \
-    max_ttl=72h
+vault write pki_int/roles/netology-example-com \
+allowed_domains=example.com \ <-- базовый домен
+allow_subdomains=true \ <-- разрешаем subdomain'ы вида *.example.com
+max_ttl="40h" \ <-- устанавливаем время жизни выпущенных сертификатов
+generate_lease=true
 ```
 
-Task 4:
-
-Создаем credentinal и получем IssuingCa.crt и IssuingCa.key.
+5. Создадим директорию для хранения сертификатов nginx
 ```
-vault write pki/issue/example-dot-com \
-    common_name=www.netology.example.com
+mkdir /etc/nginx/certs
+```
+
+6. Сгенерируем сертификаты для домена netology.example.com
+```
+sudo -s
+
+export VAULT_ADDR=http://0.0.0.0:8200
+export VAULT_TOKEN=<токен от vault>
+
+cd /etc/nginx/certs
+
+vault write -format=json pki_int/issue/netology-example-com \
+common_name=netology.example.com | tee \
+>(jq -r .data.certificate > netology.crt) \
+>(jq -r .data.issuing_ca > issuing_netology.crt) \
+>(jq -r .data.private_key > netology.key)
+
+sudo chown -R $USER:$USER *
 ```
 
 Task 5:
@@ -98,7 +131,7 @@ index.html
         <title>Welcome to netology.example.com!</title>
     </head>
     <body>
-        <h1>Success!  The netology.example.com server block is working!</h1>
+        <h1>Success! The netology.example.com server block is working!</h1>
     </body>
 </html>
 ```
@@ -123,14 +156,24 @@ sudo vim netology.example.com
 server {
         listen 80;
         listen [::]:80;
-
         root /var/www/netology.example.com/html;
-        index index.html index.htm index.nginx-debian.html;
-
+        index index.html;
         server_name netology.example.com www.netology.example.com;
+        return 301  https://netology.example.com$request_uri;
+        return 301  https://www.netology.example.com$request_uri;
+}
+
+server {
+        listen              443 ssl http2 default_server;
+        server_name         netology.example.com www.netology.example.com;
+        ssl_certificate     /etc/nginx/certs/netology.crt;
+        ssl_certificate_key /etc/nginx/certs/netology.key;
+        ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers         HIGH:!aNULL:!MD5;
 
         location / {
-                try_files $uri $uri/ =404;
+            root   /var/www/netology.example.com/html;
+            index  index.html;
         }
 }
 ```
@@ -142,58 +185,103 @@ sudo ln -s /etc/nginx/sites-available/netology.example.com /etc/nginx/sites-enab
 systemctl reload nginx
 ```
 
-По обращению
-
-```
-curl --request GET "localhost:80"
-```
-
-возвращается страница
-
-```
-<html>
-    <head>
-        <title>Welcome to devops.netology.com!</title>
-    </head>
-    <body>
-        <h1>Success!  The devops.netology.com server block is working!</h1>
-    </body>
-</html>
-```
-
-Настроим SSL.
-
-Создадим симлинк на созданный сертификат.
-
-```
-sudo ln -s ~/IssuingCa.crt /etc/ssl/certs/Netology.example.issuing.ca.crt
-sudo ln -s ~/IssuingCa.key /etc/ssl/private/Netology.example.issuing.ca.key
-```
-
-Добавляем в настройки сайта поддержку сертификатов.
-
-```
-server {
-        ...
-        ssl_certificate /etc/ssl/certs/Netology.example.issuing.ca.crt;
-        ssl_certificate_key /etc/ssl/private/Netology.example.issuing.ca.key;
-        ...
-}
-```
-
-И это не съел Nginx, надо переделывать через IntemediateCa ....
-
 Task 6:
 
-
-Устанавливаем сертификаты в систему как локальный сертификат.
-
+Подправим /etc/hosts
 ```
-sudo cp intermediate.cert.crt /usr/local/share/ca-certificates/
-sudo update-ca-certificates
+127.0.0.1	localhost
+127.0.0.1   netology.example.com
+127.0.1.1	vagrant.vm	vagrant
 ```
 
 Отправляем запрос.
 ```
-curl -v --request GET https://localhost:80
+curl -v https://netology.example.com
+```
+
+Возвращается ответ:
+```
+*   Trying 127.0.0.1:443...
+* TCP_NODELAY set
+* Connected to netology.example.com (127.0.0.1) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+* TLSv1.2 (OUT), TLS alert, unknown CA (560):
+* SSL certificate problem: unable to get local issuer certificate
+* Closing connection 0
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+More details here: https://curl.haxx.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+```
+
+Возьмем сертификат с шага pki_int.pem (Task 3-4.3) и выполним
+```
+curl -v --cacert pki_int.pem https://netology.example.com:443
+```
+
+Возвращается ответ
+```
+*   Trying 127.0.0.1:443...
+* TCP_NODELAY set
+* Connected to netology.example.com (127.0.0.1) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: pki_int.pem
+  CApath: /etc/ssl/certs
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1):
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES256-GCM-SHA384
+* ALPN, server accepted to use h2
+* Server certificate:
+*  subject: CN=netology.example.com
+*  start date: Sep 19 20:25:06 2021 GMT
+*  expire date: Sep 21 12:25:36 2021 GMT
+*  subjectAltName: host "netology.example.com" matched cert's "netology.example.com"
+*  issuer: CN=pki-ca-int
+*  SSL certificate verify ok.
+* Using HTTP2, server supports multi-use
+* Connection state changed (HTTP/2 confirmed)
+* Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
+* Using Stream ID: 1 (easy handle 0x557d2f5dbe10)
+> GET / HTTP/2
+> Host: netology.example.com
+> user-agent: curl/7.68.0
+> accept: */*
+>
+* Connection state changed (MAX_CONCURRENT_STREAMS == 128)!
+< HTTP/2 200
+< server: nginx/1.18.0 (Ubuntu)
+< date: Sun, 19 Sep 2021 21:30:40 GMT
+< content-type: text/html
+< content-length: 194
+< last-modified: Tue, 22 Jun 2021 22:03:04 GMT
+< etag: "60d25e18-c2"
+< accept-ranges: bytes
+<
+<html>
+    <head>
+        <title>Welcome to netology.example.com!</title>
+    </head>
+    <body>
+        <h1>Success!  The netology.example.com server block is working!</h1>
+    </body>
+</html>
+* Connection #0 to host netology.example.com left intact
 ```

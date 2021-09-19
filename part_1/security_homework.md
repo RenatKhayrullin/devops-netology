@@ -285,3 +285,10 @@ curl -v --cacert pki_int.pem https://netology.example.com:443
 </html>
 * Connection #0 to host netology.example.com left intact
 ```
+
+Добавим pki_int.pem в системный truststore
+```
+sudo cp pki_int.pem /usr/local/share/ca-certificates/
+sudo mv pki_int.pem pki_int.crt
+sudo update-ca-certificates
+```

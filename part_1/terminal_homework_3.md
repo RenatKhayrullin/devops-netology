@@ -133,14 +133,14 @@ echo 0 > /proc/sys/kernel/yama/ptrace_scope
 либо
 изменяем файл /etc/sysctl.d/10-ptrace.conf под рутом и чтобы после ребута VM сохранилось ptrace_scope = 0.
 ```
-3. В первом окне запускаем процесс
+2. В первом окне запускаем процесс
 ```
 ping yandex.ru
 CTRL-Z
 bg ping
 disown ping
 ```
-4. Во втором окне запускаем screen
+3. Во втором окне запускаем screen
 ```
 screen
 ps a <-- находим пид процесса

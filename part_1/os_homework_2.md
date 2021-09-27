@@ -179,8 +179,22 @@ The value of "Max open files descriptors" (ulimit -n) is limited to fs.nr_open v
 Task 6:
 ```
 sudo -i
-
+unshare -f --pid --mount-proc sleep 1h &
 ```
+В хостовой консоли
+```
+sudo -i
+nsenter --target [pid процесса sleep 1h] --pid --mount 
+ps a
+```
+Результат:
+```
+    PID TTY      STAT   TIME COMMAND
+      1 pts/2    S+     0:00 sleep 1h
+      2 pts/1    S      0:00 -bash
+     12 pts/1    R+     0:00 ps a
+```
+
 
 Task 7: \
 ```:(){ :|:& };:``` -- функция bash, которая рекурсивно делает fork(). \

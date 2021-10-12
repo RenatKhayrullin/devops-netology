@@ -28,7 +28,7 @@ elasticsearch лучше на физ.машине, остальное удобн
 т.к. вывод данных в volume не является универсальной методикой разворачивания систем внешних ресурсов.
 
 Task 2: \
-Создадим [docker образ](Dockerfile) взяв за базовый образ ```httpd```.\
+Создадим [docker образ](hw3/Dockerfile) взяв за базовый образ ```httpd```.\
 Соберем и запушим образ в docker hub.
 ```
 docker build -t devops-netology-apache2 .
@@ -39,7 +39,7 @@ docker push kh4k1/kh4k1_repo:latest
 ```
 docker run -dit --name devops-netology-app -p 8080:80 devops-netology-apache2
 ```
-и проверим, что по адресу ```localhost:8080/Index.html``` отображается [страница](public-html/Index.html).
+и проверим, что по адресу ```localhost:8080/Index.html``` отображается [страница](hw3/public-html/Index.html).
 
 Task 3:
 ```

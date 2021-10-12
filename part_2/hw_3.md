@@ -43,8 +43,8 @@ docker run -dit --name devops-netology-app -p 8080:80 devops-netology-apache2
 
 Task 3:
 ```
-docker run -d -it --name centos-test -v "$(pwd)"/info:/share/info centos:latest
-docker run -d -it --name debian-test -v "$(pwd)"/info:/share/info debian:latest
+docker run -dit --name centos-test -v "$(pwd)"/info:/share/info centos:latest
+docker run -dit --name debian-test -v "$(pwd)"/info:/share/info debian:latest
 docker exec -d centos-test touch /share/info/some_msg.txt
 docker attach debian-test
 root@2612706caa40:/# ls -la /share/info

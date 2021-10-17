@@ -158,4 +158,63 @@ This may also be found at: /root/.jenkins/secrets/initialAdminPassword
 2021-10-12 20:29:22.001+0000 [id=74] INFO hudson.model.AsyncPeriodicWork#lambda$doRun$0: Finished Periodic background build discarder. 9 ms
 ```
 
-Task 3:
+Task 3: \
+Создадим сеть.
+```
+docker network create -d bridge node_app_net
+```
+[docker образ приложения node.js](hw4_3/node/Dockerfile) \
+
+Соберем образ
+```
+docker build -t node_app .
+```
+Запустим образ приложения node.js.
+```
+docker run -dit --name node_app_test --network=node_app_net -p 3000:3000 node_app
+```
+Запустим образ ubuntu.
+```
+docker run -dit --name ubuntu-test --network=node_app_net ubuntu:latest
+```
+Выполним.
+```
+docker exec ubuntu-test curl -v node_app_test:3000/ > curl_out.txt
+```
+```
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 172.20.0.2:3000...
+* TCP_NODELAY set
+* Connected to node_app_test (172.20.0.2) port 3000 (#0)
+> GET / HTTP/1.1
+> Host: node_app_test:3000
+> User-Agent: curl/7.68.0
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 200 OK
+< Cache-Control: private, no-cache, no-store, no-transform, must-revalidate
+< Expires: -1
+< Pragma: no-cache
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 524711
+< ETag: W/"801a7-7i7iWYtCHD8BTiEYmO87uSlG9KQ"
+< Date: Sun, 17 Oct 2021 16:40:24 GMT
+< Connection: keep-alive
+< Keep-Alive: timeout=5
+<
+{ [14162 bytes data]
+100  512k  100  512k    0     0   626k      0 --:--:-- --:--:-- --:--:--  626k
+* Connection #0 to host node_app_test left intact
+```
+Список сетей.
+```
+Reist@MacBookRIK node % docker network ls
+NETWORK ID     NAME                  DRIVER    SCOPE
+3302249d3173   bridge                bridge    local
+562f4535b135   dockerfiles_default   bridge    local
+a564174e847f   host                  host      local
+9db848831282   node_app_net          bridge    local
+fd631c4a02ad   none                  null      local
+```

@@ -202,7 +202,9 @@ su postgres
 pg_dump -O -C test-db > /postgresql-backup/test_db_dump.sql
 ```
 В случае текстового файла бэкапа можно восстановить так \
-Если бэкап бинарный, то воспользоваться pg_restore.
+если бэкап бинарный, то воспользоваться pg_restore.
+
+После из скриптов создания пользователей, надо восстановить пользаков (или через pg_dumpall -r и подчистить лищних).
 ```
 su postgres
 psql -d postgres -f /postgresql-backup/test_db_dump.sql

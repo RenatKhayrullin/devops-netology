@@ -281,7 +281,7 @@ pg_dump: creating CONSTRAINT "public.orders orders_pkey"
 pg_dump: creating FK CONSTRAINT "public.clients clients_order_fk"
 pg_dump: creating ACL "DATABASE "test-db""
 ```
-Результат дампа: [текстовый дамп с данными](/hw6/backup/test_db_dump.sql) \
+Результат дампа: [текстовый дамп с данными](hw6/backup/test_db_dump.sql) \
 В случае текстового файла бэкапа можно восстановить так
 ```
 su postgres

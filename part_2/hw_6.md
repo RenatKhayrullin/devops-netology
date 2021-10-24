@@ -114,6 +114,7 @@ select
 commit;
 ```
 ```
+insert into clients (id, second_name, country) 
 select
        nextval('clients_seq') as id,
        'Иванов Иван Иванович' as second_name,
@@ -199,13 +200,145 @@ rows -- должно быть число строк на базе которых
 Task 6:
 ```
 su postgres
-pg_dump -O -C test-db > /postgresql-backup/test_db_dump.sql
-```
-В случае текстового файла бэкапа можно восстановить так \
-если бэкап бинарный, то воспользоваться pg_restore.
+pg_dump -v -O -C test-db > /postgresql-backup/test_db_dump.sql
 
-После из скриптов создания пользователей, надо восстановить пользаков (или через pg_dumpall -r и подчистить лищних).
+pg_dump: last built-in OID is 16383
+pg_dump: reading extensions
+pg_dump: identifying extension members
+pg_dump: reading schemas
+pg_dump: reading user-defined tables
+pg_dump: reading user-defined functions
+pg_dump: reading user-defined types
+pg_dump: reading procedural languages
+pg_dump: reading user-defined aggregate functions
+pg_dump: reading user-defined operators
+pg_dump: reading user-defined access methods
+pg_dump: reading user-defined operator classes
+pg_dump: reading user-defined operator families
+pg_dump: reading user-defined text search parsers
+pg_dump: reading user-defined text search templates
+pg_dump: reading user-defined text search dictionaries
+pg_dump: reading user-defined text search configurations
+pg_dump: reading user-defined foreign-data wrappers
+pg_dump: reading user-defined foreign servers
+pg_dump: reading default privileges
+pg_dump: reading user-defined collations
+pg_dump: reading user-defined conversions
+pg_dump: reading type casts
+pg_dump: reading transforms
+pg_dump: reading table inheritance information
+pg_dump: reading event triggers
+pg_dump: finding extension tables
+pg_dump: finding inheritance relationships
+pg_dump: reading column info for interesting tables
+pg_dump: finding the columns and types of table "public.orders"
+pg_dump: finding the columns and types of table "public.clients"
+pg_dump: flagging inherited columns in subtables
+pg_dump: reading indexes
+pg_dump: reading indexes for table "public.orders"
+pg_dump: reading indexes for table "public.clients"
+pg_dump: flagging indexes in partitioned tables
+pg_dump: reading extended statistics
+pg_dump: reading constraints
+pg_dump: reading foreign key constraints for table "public.orders"
+pg_dump: reading foreign key constraints for table "public.clients"
+pg_dump: reading triggers
+pg_dump: reading triggers for table "public.orders"
+pg_dump: reading triggers for table "public.clients"
+pg_dump: reading rewrite rules
+pg_dump: reading policies
+pg_dump: reading row security enabled for table "public.order_seq"
+pg_dump: reading policies for table "public.order_seq"
+pg_dump: reading row security enabled for table "public.orders"
+pg_dump: reading policies for table "public.orders"
+pg_dump: reading row security enabled for table "public.clients_seq"
+pg_dump: reading policies for table "public.clients_seq"
+pg_dump: reading row security enabled for table "public.clients"
+pg_dump: reading policies for table "public.clients"
+pg_dump: reading publications
+pg_dump: reading publication membership
+pg_dump: reading subscriptions
+pg_dump: reading large objects
+pg_dump: reading dependency data
+pg_dump: saving encoding = UTF8
+pg_dump: saving standard_conforming_strings = on
+pg_dump: saving search_path =
+pg_dump: saving database definition
+pg_dump: creating DATABASE "test-db"
+pg_dump: connecting to new database "test-db"
+pg_dump: creating TABLE "public.clients"
+pg_dump: creating SEQUENCE "public.clients_seq"
+pg_dump: creating SEQUENCE "public.order_seq"
+pg_dump: creating TABLE "public.orders"
+pg_dump: processing data for table "public.clients"
+pg_dump: dumping contents of table "public.clients"
+pg_dump: processing data for table "public.orders"
+pg_dump: dumping contents of table "public.orders"
+pg_dump: executing SEQUENCE SET clients_seq
+pg_dump: executing SEQUENCE SET order_seq
+pg_dump: creating CONSTRAINT "public.clients clients_pkey"
+pg_dump: creating CONSTRAINT "public.orders orders_pkey"
+pg_dump: creating FK CONSTRAINT "public.clients clients_order_fk"
+pg_dump: creating ACL "DATABASE "test-db""
+```
+Результат дампа: [текстовый дамп с данными](/hw6/backup/test_db_dump.sql) \
+В случае текстового файла бэкапа можно восстановить так
 ```
 su postgres
-psql -d postgres -f /postgresql-backup/test_db_dump.sql
+psql -v -d postgres -f /postgresql-backup/test_db_dump.sql
+
+SET
+SET
+SET
+SET
+SET
+ set_config
+------------
+
+(1 row)
+
+SET
+SET
+SET
+SET
+CREATE DATABASE
+You are now connected to database "test-db" as user "postgres".
+SET
+SET
+SET
+SET
+SET
+ set_config
+------------
+
+(1 row)
+
+SET
+SET
+SET
+SET
+SET
+SET
+CREATE TABLE
+CREATE SEQUENCE
+CREATE SEQUENCE
+CREATE TABLE
+COPY 5
+COPY 5
+ setval
+--------
+     10
+(1 row)
+
+ setval
+--------
+      5
+(1 row)
+
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+GRANT
 ```
+если бэкап бинарный, то надо воспользоваться pg_restore.\
+После из скриптов создания пользователей, надо восстановить пользаков (или через pg_dumpall -r и подчистить лишних).

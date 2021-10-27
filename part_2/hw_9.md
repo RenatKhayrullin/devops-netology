@@ -30,7 +30,7 @@ localhost:9200
 ```
 
 Task 2: \
-[создание индексов](hw9/create_index.sh) \
+[создание индексов](hw9/create_index.sh)
 
 Список индексов
 ```

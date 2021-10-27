@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+
+  elastic:
+    image: kh4k1/elastic-netology:latest
+    container_name: elastic-netology
+    volumes:
+      - ./elastic/data:/var/lib/elasticsearch
+    ports:
+      - 9200:9200

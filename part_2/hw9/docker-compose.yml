@@ -6,6 +6,7 @@ services:
     image: kh4k1/elastic-netology:latest
     container_name: elastic-netology
     volumes:
-      - ./elastic/data:/var/lib/elasticsearch
+      - ./elastic/data:/var/lib/
+      - ./elastic/snapshots:/home/elastic/elasticsearch-7.15.1/snapshots
     ports:
       - 9200:9200

@@ -33,4 +33,5 @@ ENTRYPOINT elasticsearch \
             -Enetwork.host=0.0.0.0 \
             -Epath.data=/var/lib/elasticsearch \
             -Epath.logs=/var/log/elasticsearch \
+            -Epath.repo=snapshots \
             -Ediscovery.type=single-node

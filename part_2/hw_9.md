@@ -252,5 +252,98 @@ Yellow состояние из-за того, для индексов есть p
 
 [удаление индексов](hw9/delete_index.sh)
 
-Task 3:
+Task 3: \
+[скрипт создания snapshot](hw9/create_shapshot.sh) \
 
+Ответ на выполнение скрипта:
+```
+{"acknowledged":true}
+```
+
+Запрос инфы по репозиторию:
+```
+http://localhost:9200/_snapshot/netology_backup
+```
+Ответ:
+```
+{
+  "netology_backup": {
+    "type": "fs",
+    "settings": {
+      "location": "/home/elastic/elasticsearch-7.15.1/snapshots"
+    }
+  }
+}
+```
+Список индексов
+```
+http://localhost:9200/_cat/indices/test*?v&s=index
+```
+Результат
+```
+health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   test  hKCbg5HhRYunJ8Lkf0h80g   1   0          0            0       208b           208b
+```
+
+Результат создания snapshot:
+```
+{
+  "snapshot": {
+    "snapshot": "shapshot_1",
+    "uuid": "PXLxkRY_Q0G0OFbi6pl3wA",
+    "repository": "netology_backup",
+    "version_id": 7150199,
+    "version": "7.15.1",
+    "indices": [
+      ".geoip_databases",
+      "test"
+    ],
+    "data_streams": [],
+    "include_global_state": true,
+    "state": "SUCCESS",
+    "start_time": "2021-10-28T16:16:35.817Z",
+    "start_time_in_millis": 1635437795817,
+    "end_time": "2021-10-28T16:16:37.219Z",
+    "end_time_in_millis": 1635437797219,
+    "duration_in_millis": 1402,
+    "failures": [],
+    "shards": {
+      "total": 2,
+      "failed": 0,
+      "successful": 2
+    },
+    "feature_states": [
+      {
+        "feature_name": "geoip",
+        "indices": [
+          ".geoip_databases"
+        ]
+      }
+    ]
+  }
+}
+```
+
+Файлы в директории:
+```
+[elasticsearch@daac228c071d ~]$ ls -l elasticsearch-7.15.1/snapshots/
+total 40
+-rw-r--r-- 1 elasticsearch elasticsearch   828 Oct 28 16:16 index-0
+-rw-r--r-- 1 elasticsearch elasticsearch     8 Oct 28 16:16 index.latest
+drwxr-xr-x 4 elasticsearch elasticsearch   128 Oct 28 16:16 indices
+-rw-r--r-- 1 elasticsearch elasticsearch 27618 Oct 28 16:16 meta-PXLxkRY_Q0G0OFbi6pl3wA.dat
+-rw-r--r-- 1 elasticsearch elasticsearch   437 Oct 28 16:16 snap-PXLxkRY_Q0G0OFbi6pl3wA.dat
+```
+
+Индексы после удаления и создания test-2
+```
+health status index  uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   test-2 cF60Iuv_TmSHdXPcW5V69Q   1   0          0            0       208b           208b
+```
+
+Индексы после восстановления:
+```
+health status index  uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   test   xCHImhvXQPu9jd4Qhr69xw   1   0          0            0       208b           208b
+green  open   test-2 cF60Iuv_TmSHdXPcW5V69Q   1   0          0            0       208b           208b
+```

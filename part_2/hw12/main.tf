@@ -24,7 +24,14 @@ variable "availability_zone_names" {
 }
 
 provider "aws" {
-  profile = "default"
+  alias = "aws_1"
+  profile = "stage"
+  region  = var.availability_zone_names[0]
+}
+
+provider "aws" {
+  alias = "aws_2"
+  profile = "prod"
   region  = var.availability_zone_names[0]
 }
 

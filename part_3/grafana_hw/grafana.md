@@ -10,7 +10,7 @@ Task 1: \
 [prometheus конфиг](monitoring/grafana/configuration/config.ini) \
 [настройка data source](monitoring/grafana/configuration/provisioning/datasources/all.yml) \
 [настройка dashboard](monitoring/grafana/configuration/provisioning/dashboards/all.yml) \
-[grafana executable](monitoring/grafana/executables/grafana_run.sh) \
+[grafana executable](monitoring/grafana/executables/grafana_run.sh)
 
 Task 3:
 

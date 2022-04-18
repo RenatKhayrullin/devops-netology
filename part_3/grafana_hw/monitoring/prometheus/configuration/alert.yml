@@ -1,0 +1,6 @@
+groups:
+  - name: AppAlerts
+    rules:
+      - alert: Monitoring instance is down
+        expr: up{job="service_monitoring"} < 1
+        for: 5m 

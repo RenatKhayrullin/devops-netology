@@ -1,0 +1,53 @@
+version: '3.3'
+
+services:
+
+  nodeexporter:
+    image: prom/node-exporter:v1.0.1
+    container_name: nodeexporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    expose:
+      - 9100:9100
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    environment:
+      BACKEND_URL: nodeexporter:9100
+    ports:
+      - 9090:9090
+    volumes:
+      - ./monitoring/prometheus/executables:/executables
+      - ./monitoring/prometheus/configuration/:/etc/prometheus/
+    entrypoint: /bin/sh -c "chmod +x /executables/prometheus_run.sh && /executables/prometheus_run.sh"
+    depends_on:
+      - nodeexporter
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      PROMETHEUS_URL: prometheus:9090
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - 3000:3000
+    volumes:
+      - ./monitoring/grafana/executables:/executables
+      - ./monitoring/grafana/configuration/config.ini:/etc/grafana/config.ini
+      # https://github.com/grafana/grafana/issues/10786 -> need to replace ${DS_PROMETHEUS} on Prometheus in metric json files
+      - ./monitoring/grafana/configuration/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/configuration/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/configuration/dashboards:/var/lib/grafana/dashboards
+    entrypoint: /bin/sh -c "chmod +x /executables/grafana_run.sh && /executables/grafana_run.sh"
+    depends_on:
+      - prometheus

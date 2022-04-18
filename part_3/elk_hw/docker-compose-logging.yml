@@ -1,0 +1,76 @@
+version: '3.3'
+
+services:
+
+  app:
+    image: library/python:3.9-alpine
+    container_name: app
+    volumes:
+      - ./app/run.py:/opt/run.py:Z
+    entrypoint: python3 /opt/run.py
+    labels:
+      collect_logs_with_filebeat: "true"
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+    container_name: elasticsearch
+    environment:
+      ES_JAVA_OPTS: -Xmx256m -Xms256m
+      ELASTIC_USER: elastic
+      ELASTIC_PASSWORD: elastic
+      xpack.security.enabled: "true"
+      discovery.type: single-node
+    volumes:
+      - ./logging/elasticsearch/data:/usr/share/elasticsearch/data:rw
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.2
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_USERNAME: elastic
+      ELASTICSEARCH_PASSWORD: elastic
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    ports:
+      - 5601:5601
+    restart: on-failure
+    depends_on:
+      - elasticsearch
+      - logstash
+      - filebeat
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.15.2
+    container_name: logstash
+    environment:
+      INPUT_PORT: 5044
+      LS_JAVA_OPTS: -Xmx256m -Xms256m
+      ELASTIC_USER: elastic
+      ELASTIC_PASSWORD: elastic
+      ELASTIC_HOSTS: elasticsearch:9200
+    ports:
+      - 5044:5044
+    volumes:
+      - ./logging/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    restart: on-failure
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.15.2
+    container_name: filebeat
+    environment:
+      LOGSTASH_HOST: logstash:5044
+    volumes:
+      - ./logging/filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./logging/filebeat/data:/usr/share/filebeat/data:rw
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    user: root
+    restart: on-failure
+    depends_on:
+      - logstash

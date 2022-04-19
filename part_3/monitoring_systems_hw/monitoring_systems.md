@@ -79,3 +79,5 @@ curl http://localhost:9092/kapacitor/v1/ping
 * Connection #0 to host localhost left intact
 * Closing connection 0
 ```
+
+P.S. про настройку telegraf тоже стоит указать в ДЗ, т.к. они перекроили базовый образ и контейнер запускается из под пользователя telegraf.

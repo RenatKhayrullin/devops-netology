@@ -27,17 +27,14 @@ Task 2:
 Task 3:
 
 ```
-curl http://localhost:8086
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="InfluxDB is a time series platform, purpose-built by InfluxData for storing metrics and events, provides real-time visibility into stacks, sensors, and systems."><title>InfluxDB</title><base href="/"><link rel="shortcut icon" href="/favicon.ico"></head><body><div id="react-root" data-basepath=""></div><script src="/cc16dd8913.js"></script></body></html>
-```
-```
 curl http://localhost:8888
 <!DOCTYPE html><html><head><meta http-equiv="Content-type" content="text/html; charset=utf-8"><title>Chronograf</title><link rel="icon shortcut" href="/favicon.fa749080.ico"><link rel="stylesheet" href="/src.9cea3e4e.css"></head><body> <div id="react-root" data-basepath=""></div> <script src="/src.a969287c.js"></script> </body></html>
 ```
 
-/ping ничего не выдает в response, возможно надо использовать /health
+/ping ничего не выдает в response (возможно надо использовать /health в ДЗ) 
 ```
 curl -vvv http://localhost:8086/ping
+
 *   Trying ::1...
 * TCP_NODELAY set
 * Connected to localhost (::1) port 8086 (#0)
@@ -58,7 +55,6 @@ curl -vvv http://localhost:8086/ping
 * Closing connection 0
 ```
 
-С kapacitor тоже что-то странное
 ```
 curl http://localhost:9092/kapacitor/v1/ping
 

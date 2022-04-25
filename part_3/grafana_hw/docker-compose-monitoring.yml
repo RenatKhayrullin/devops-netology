@@ -15,8 +15,10 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
     restart: unless-stopped
-    expose:
+    ports:
       - 9100:9100
+    expose:
+      - 9100
 
   prometheus:
     image: prom/prometheus:latest

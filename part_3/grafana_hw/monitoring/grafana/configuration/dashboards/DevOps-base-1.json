@@ -21,9 +21,109 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 3,
   "links": [],
   "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by(instance)(irate(node_cpu_seconds_total{mode='idle'}[1m]))",
+          "interval": "",
+          "legendFormat": "1min avg",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by(instance)(irate(node_cpu_seconds_total{mode='idle'}[5m]))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "5min avg",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by(instance)(irate(node_cpu_seconds_total{mode='idle'}[15m]))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "15min avg",
+          "refId": "C"
+        }
+      ],
+      "title": "CPU Load Average",
+      "type": "timeseries"
+    },
     {
       "alert": {
         "alertRuleTags": {},
@@ -123,7 +223,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 8
       },
       "id": 6,
       "options": {
@@ -252,7 +352,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 16
       },
       "id": 4,
       "options": {
@@ -406,7 +506,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 24
       },
       "id": 2,
       "options": {
@@ -455,5 +555,5 @@
   "timezone": "",
   "title": "DevOps-base",
   "uid": "YKdajzwnz",
-  "version": 11
+  "version": 1
 }

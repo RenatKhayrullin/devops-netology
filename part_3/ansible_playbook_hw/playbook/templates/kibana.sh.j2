@@ -1,0 +1,10 @@
+# Warning: This file is Ansible Managed, manual changes will be overwritten on next playbook run.
+#!/usr/bin/env bash
+
+export KIBANA_HOME={{ kibana_home }}
+export PATH=$PATH:$KIBANA_HOME/bin
+export ELASTIC_USER={{ elastic_user }}
+export ELASTIC_PASSWORD={{ elastic_password }}
+export ELASTICSEARCH_URL=http://centos7:9200
+export ELASTICSEARCH_HOSTS='["http://centos7:9200"]'
+export server.host=0.0.0.0

@@ -1,0 +1,19 @@
+---
+elasticsearch:
+  hosts:
+    el-instance:
+      ansible_connection: ssh
+      ansible_host: 84.201.154.246
+      ansible_user: reist
+filebeat:
+  hosts:
+    filebeat-instance:
+      ansible_connection: ssh
+      ansible_host: 84.201.152.79
+      ansible_user: reist
+kibana:
+  hosts:
+    kibana-instance:
+      ansible_connection: ssh
+      ansible_host: 51.250.25.117
+      ansible_user: reist

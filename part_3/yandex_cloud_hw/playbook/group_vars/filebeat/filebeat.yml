@@ -1,0 +1,3 @@
+---
+filebeat_version: "7.16.2"
+filebeat_package: filebeat-7.16.2-x86_64.rpm

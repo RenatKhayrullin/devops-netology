@@ -1,0 +1,141 @@
+---
+- name: Install Java
+  hosts: all
+  tasks:
+    - name: Set facts for Java 11 vars
+      set_fact:
+        java_home: "/opt/jdk/{{ java_jdk_version }}"
+      tags: java
+    - name: Upload .tar.gz file containing binaries from local storage
+      copy:
+        src: "{{ java_openjdk_package }}"
+        dest: "/tmp/jdk-{{ java_jdk_version }}.tar.gz"
+      register: download_java_binaries
+      until: download_java_binaries is succeeded
+      tags: java
+    - name: Ensure installation dir exists
+      become: true
+      file:
+        state: directory
+        path: "{{ java_home }}"
+      tags: java
+    - name: Extract java in the installation directory
+      become: true
+      unarchive:
+        copy: false
+        src: "/tmp/jdk-{{ java_jdk_version }}.tar.gz"
+        dest: "{{ java_home }}"
+        extra_opts: [--strip-components=1]
+        creates: "{{ java_home }}/bin/java"
+      tags:
+        - java
+    - name: Export environment variables
+      become: true
+      template:
+        src: jdk.sh.j2
+        dest: /etc/profile.d/jdk.sh
+      tags: java
+
+- name: Install Elasticsearch
+  hosts: elasticsearch
+  handlers:
+    - name: restart Elasticsearch
+      become: true
+      service:
+        name: elasticsearch
+        state: restarted
+  tasks:
+    - name: Upload Elasticsearch .rpm file containing binaries from local storage
+      copy:
+        src: "{{ elasticsearch_package }}"
+        dest: "/tmp/elasticsearch-{{ elastic_version }}-x86_64.rpm"
+      register: download_elasticsearch_binaries
+      until: download_elasticsearch_binaries is succeeded
+      tags: elasticsearch
+    - name: Install Elasticsearch from rpm package
+      become: true
+      yum:
+        name: "/tmp/elasticsearch-{{ elastic_version }}-x86_64.rpm"
+        state: present
+      tags: elasticsearch
+    - name: Configure Elasticsearch
+      become: true
+      template:
+        src: elasticsearch.yml.j2
+        dest: /etc/elasticsearch/elasticsearch.yml
+      notify: restart Elasticsearch
+      tags: elasticsearch
+- name: Install Kibana
+  hosts: kibana
+  handlers:
+    - name: restart Kibana
+      become: true
+      service:
+        name: kibana
+        state: restarted
+  tasks:
+    - name: Upload Kibana .rpm file containing binaries from local storage
+      copy:
+        src: "{{ kibana_package }}"
+        dest: "/tmp/kibana-{{ kibana_version }}-x86_64.rpm"
+      register: download_kibana_binaries
+      until: download_kibana_binaries is succeeded
+      tags: kibana
+    - name: Install Kibana from rpm package
+      become: true
+      yum:
+        name: "/tmp/kibana-{{ kibana_version }}-x86_64.rpm"
+        state: present
+      tags: kibana
+    - name: Configure Kibana
+      become: true
+      template:
+        src: kibana.yml.j2
+        dest: /etc/kibana/kibana.yml
+      notify: restart Kibana
+      tags: kibana
+- name: Install Filebeat
+  hosts: filebeat
+  handlers:
+    - name: restart Filebeat
+      become: true
+      service:
+        name: filebeat
+        state: restarted
+        enabled: true
+  tasks:
+    - name: Upload Filebeat .rpm file containing binaries from local storage
+      copy:
+        src: "{{ filebeat_package }}"
+        dest: "/tmp/filebeat-{{ filebeat_version }}-x86_64.rpm"
+      register: download_filebeat_binaries
+      until: download_filebeat_binaries is succeeded
+      tags: filebeat
+    - name: Install Filebeat from rpm package
+      become: true
+      yum:
+        name: "/tmp/filebeat-{{ filebeat_version }}-x86_64.rpm"
+        state: present
+      tags: filebeat
+    - name: Configure Filebeat
+      become: true
+      template:
+        src: filebeat.yml.j2
+        dest: /etc/filebeat/filebeat.yml
+      notify: restart Filebeat
+      tags: filebeat
+    - name: Set filebeat systemwork
+      become: true
+      command:
+        cmd: filebeat modules enable system
+        chdir: /usr/share/filebeat/bin
+      register: filebeat_modules
+      changed_when: filebeat_modules.stdout != 'Module system is already enabled'
+    - name: Load Kibana dashboard
+      become: true
+      command:
+        cmd:  filebeat setup
+        chdir: /usr/share/filebeat/bin
+      register: filebeat_setup
+      changed_when: false
+      until: filebeat_setup is succeeded

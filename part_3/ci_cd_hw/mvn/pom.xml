@@ -9,15 +9,15 @@
     <repository>
       <id>my-repo</id>
       <name>maven-public</name>
-      <url>http://51.250.23.191:8081/repository/maven-public/</url>
+      <url>http://51.250.23.169:8081/repository/maven-public/</url>
     </repository>
   </repositories>
 
   <dependencies>
       <dependency>
-          <groupId>nexus</groupId>
+          <groupId>netology</groupId>
           <artifactId>java</artifactId>
-          <version>11.0.1</version>
+          <version>11.0.2</version>
           <classifier>distrib</classifier>
           <type>tar.gz</type>
       </dependency>

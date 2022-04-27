@@ -217,9 +217,7 @@ Task 3: Nexus \
 
 Task 4: Maven
 ```
-Reist@MacBookRIK% mvn --version
-Apache Maven 3.8.3 (ff8e977a158738155dc465c6a97ffaf31982d739)
-Maven home: /usr/local/Cellar/maven/3.8.3/libexec
+Maven home: /Users/Reist/Documents/netology-hw-repo/apache-maven-3.8.5
 Java version: 11.0.11, vendor: AdoptOpenJDK, runtime: /Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
 Default locale: ru_RU, platform encoding: UTF-8
 OS name: "mac os x", version: "11.5", arch: "x86_64", family: "mac"
@@ -227,3 +225,42 @@ OS name: "mac os x", version: "11.5", arch: "x86_64", family: "mac"
 
 Task 5:
 [app-pom.xml](mvn/pom.xml)
+
+```
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------------< com.netology.app:simple-app >---------------------
+[INFO] Building simple-app 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+Downloading from my-repo: http://51.250.23.169:8081/repository/maven-public/netology/java/11.0.2/java-11.0.2.pom
+Downloaded from my-repo: http://51.250.23.169:8081/repository/maven-public/netology/java/11.0.2/java-11.0.2.pom (351 B at 2.0 kB/s)
+Downloading from my-repo: http://51.250.23.169:8081/repository/maven-public/netology/java/11.0.2/java-11.0.2-distrib.tar.gz
+Downloaded from my-repo: http://51.250.23.169:8081/repository/maven-public/netology/java/11.0.2/java-11.0.2-distrib.tar.gz (106 MB at 11 MB/s)
+[INFO]
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ simple-app ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /Users/Reist/Documents/devops-netology/part_3/ci_cd_hw/mvn/src/main/resources
+[INFO]
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ simple-app ---
+[INFO] No sources to compile
+[INFO]
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ simple-app ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /Users/Reist/Documents/devops-netology/part_3/ci_cd_hw/mvn/src/test/resources
+[INFO]
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ simple-app ---
+[INFO] No sources to compile
+[INFO]
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ simple-app ---
+[INFO] No tests to run.
+[INFO]
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ simple-app ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] Building jar: /Users/Reist/Documents/devops-netology/part_3/ci_cd_hw/mvn/target/simple-app-1.0-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11.605 s
+[INFO] Finished at: 2022-04-28T02:42:12+03:00
+[INFO] ------------------------------------------------------------------------
+```

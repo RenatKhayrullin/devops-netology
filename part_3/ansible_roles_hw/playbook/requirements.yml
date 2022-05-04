@@ -2,7 +2,7 @@
   - src: git@github.com:netology-code/mnt-homeworks-ansible.git
     scm: git
     version: "2.1.4"
-    name: elastic
+    name: elasticsearch_role
   - src: git@github.com:RenatKhayrullin/filebeat-role.git
     scm: git
     version: "1.0.2"

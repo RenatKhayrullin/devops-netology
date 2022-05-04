@@ -7,8 +7,9 @@ RUN yum -y install glibc-common tar zlib-devel openssl-devel libffi-devel
 RUN yum -y install iptables supervisor
 RUN yum clean all
 
-ADD https://www.python.org/ftp/python/3.9.2/Python-3.9.2.tgz Python-3.9.2.tgz
-RUN tar xf Python-3.9.2.tgz && cd Python-3.9.2/ && ./configure && make && make altinstall
+
+ADD https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tgz Python-3.8.5.tgz
+RUN tar xf Python-3.8.5.tgz && cd Python-3.8.5/ && ./configure && make && make altinstall
 RUN python3 -m pip install --upgrade pip && pip3 install tox selinux
 RUN rm -rf Python-*
 
